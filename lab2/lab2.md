@@ -25,36 +25,164 @@
 <ul>
   <li><b>Лучший случай: </b>O(1)</li>
   <li><b>Худший случай: </b>O(n)</li>
+  <li><b>Средний случай: </b>O(n)</li>
 </ul>
 <h4>Значение директив</h4>
-<code>#pragma omp parallel num_threads(threads) shared(array, count) reduction(max: max) default(none)</code><br>
-Задается параллельная обасть, с количеством тредов threads. Переменные <b>array</b> и <b>count</b> объявляются общими для всех тредов и непараллельной части алгоритма. Все новые переменные без явного указания класса не разрешены.<br>
-Область - <code>цикл for + printf("-- My lmax is: %d;\n", max)</code><br>
-Если бы ее не было то цикл просто выполнился бы последовательно.<br><br>
-<code>#pragma omp for</code><br>
-Задается директива относящаяся к циклу for идущему сразу после нее, выполняется распараллеливагие цикла с дефолтным значением schedule.<br>
+<code>#pragma omp parallel for shared(array, count, chunk) default(none) private(i) schedule(dynamic, chunk) num_threads(threads)
+</code><br>
+Задается обасть параллельного цикла, с количеством тредов <b>threads</b>. Переменные <b>array</b>, <b>count</b> и <b>chunk</b> объявляются общими для всех тредов и непараллельной части алгоритма. Все новые переменные без явного указания класса не разрешены. Цикл выполняется <b>dynamic</b> образом с размером чанка <b>chunk</b> - это значит, что каждый раз когда определенный тред закончит выполнение своей части цикла, ему выдадется новые <b>chunk</b> итераций.<br>
+Область - <code>цикл for генерации массива</code><br>
+Эта директива необходима для того, чтобы массив генерировался быстрее.<br><br>
+<code>#pragma omp parallel for shared(array, count, target) default(none) private(i) num_threads(threads) reduction(min: index)
+</code><br>
+Задается обасть параллельного цикла, с количеством тредов <b>threads</b>. Переменные <b>array</b>, <b>count</b> и <b>target</b> объявляются общими для всех тредов и непараллельной части алгоритма. Все новые переменные без явного указания класса не разрешены. Переменная <b>i</b> объявляется индивидуальной для каждого треда. <b>reduction</b> с опцией min - будет выбирать минимальный индекс из каждого, что нашел каждый тред по отдельности.<br>
 Область - <code>цикл for</code><br>
-Если бы ее не было то цикл выполнился бы thread раз, каждый раз находя один и тот же максимальный элемент.<br><br>
+Эта директива необходима для распараллеливания поиска первого индекса и соответственно уменьшения времени его поиска, иначе бы цикл последовательно выполнил <b>count</b> итераций.<br><br>
+
 <h3>Экспериментальные вычисления</h3>
 <ul>
     <li>
         Последовательный алгоритм
         <ul>
-            <li>Average number of operations: 10000015</li>
-            <li>Average time spent: 0.022116 sec</li>
+            <li>Average time spent: 0.0129926 sec</li>
         </ul>
     </li>
 </ul>
 <h3>Ускорение и эффективность</h3>
 
-![AvgTime](https://user-images.githubusercontent.com/75146596/192174536-ed62b228-2601-400f-930d-93539fa16697.png)
+![AvgTime](https://user-images.githubusercontent.com/75146596/193947847-86a33f53-33da-45fc-8aa6-dfdb185f2965.png)
 
-![Acceleration](https://user-images.githubusercontent.com/75146596/192174546-bd3a64c0-a8ca-4d93-8415-3977d8f81c30.png)
+![Acceleration](https://user-images.githubusercontent.com/75146596/193947859-0c5fd03f-ef05-43de-bba3-cb43b1c0d96b.png)
 
-![Efficiency](https://user-images.githubusercontent.com/75146596/192174550-0e059cb8-4c86-49fe-9433-2a2cbbca8a01.png)
-
+![Efficiency](https://user-images.githubusercontent.com/75146596/193947869-5818d494-a26e-4ae8-a150-2929eb60627d.png)
 
 <h3>Заключение</h3>
-В данной работе я ознакомился с азами использования библиотеки OpenMP в языке программирования C. Также установил, что не всегда ожидаемое время работы и ускорение будут совпадать с реальными показателями.
+В данной работе я написал свой первый параллельный цикл с использованием библитеки OpenMP на языке C. Также установил, что, возможно, я либо неправильно измеряю время, либо у меня проблемы с ноутбуком.
 <h3>Приложение</h3>
 <h4>Оценка работы последовательной программы</h4>
+
+```c
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <omp.h>
+
+void new_array(int* array, unsigned int* random_seed, int count){
+    srand(*random_seed);
+    int i;
+    int chunk = count / 16;
+    int threads = 16;
+    #pragma omp parallel for shared(array, count, chunk) default(none) private(i) schedule(dynamic, chunk) num_threads(threads)
+    for(i=0; i<count; i++){ 
+       array[i] = rand(); 
+    }
+    *random_seed += rand();
+}
+
+int main(int argc, char** argv)
+{
+    const int count = 10000000;   
+    unsigned int random_seed = 920214;
+    const int num_exp = 20;
+
+
+    int* array = 0;              
+    int  index = -1;            
+
+    srand(random_seed);
+
+    array = (int*)malloc(count*sizeof(int));
+
+    int target; 
+    double t1, t2, res = 0.0;
+
+    for(int i = 0; i < num_exp; i++){
+        printf("started array\n");
+        new_array(array, &random_seed, count);
+        printf("ended array\n");
+        target = array[rand() % count];
+        index = -1;
+        
+        t1 = omp_get_wtime();
+        for(int i=0; i<count; i++)
+        {
+            if(array[i] == target)
+            {
+                index = i;
+                break;
+            }
+        }
+        t2 = omp_get_wtime();
+        res += t2 - t1;
+    }
+    res /= (double)(num_exp);
+    printf("Average time: %g\n", res);
+
+    free(array);
+    return(0);
+}
+```
+
+<h4>Оценка работы параллельной программы</h4>
+
+```c
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <omp.h>
+#include <time.h>
+
+void new_array(int* array, unsigned int* random_seed, int count){
+    srand(*random_seed);
+    int i;
+    int threads = 16;
+    int chunk = count / threads;
+    #pragma omp parallel for shared(array, count, chunk) default(none) private(i) schedule(dynamic, chunk) num_threads(threads)
+    for(i=0; i<count; i++) { 
+       array[i] = rand(); 
+    }
+    *random_seed += rand();
+}
+
+int main(int argc, char** argv)
+{
+    const int count = 10000000;
+    unsigned int random_seed = 920214;
+    const int num_exp = 10;
+    const int thread_bound = 10;
+
+    int* array = NULL;
+    int  index, i, target, threads;
+    const int chunk = count / threads;
+
+    double t1, t2, res;
+
+    array = (int*)calloc(count, sizeof(int));
+
+    for(threads=1; threads <= thread_bound; threads++){
+        fprintf(stderr, "curthreads: %d\n", threads);
+        res = 0.0;
+        for(int j = 0; j < num_exp; j++){
+            new_array(array, &random_seed, count);
+            target = array[rand() % count];
+            index = count + 1; 
+            
+            t1 = omp_get_wtime();
+            #pragma omp parallel for shared(array, count, target) default(none) private(i) num_threads(threads) reduction(min: index)
+            for(i=0; i<count; i++){
+
+                if(array[i] == target){
+                    index = i;
+                }
+            }
+            t2 = omp_get_wtime();
+            res += t2 - t1;
+        }
+        res /= (double)(num_exp);
+        fprintf(stdout, "(%d, %g), ", threads, res);
+        random_seed = 920214; ///< RNG seed
+    }
+    free(array);
+    return(0);
+}
+```
