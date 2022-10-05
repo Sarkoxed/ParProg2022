@@ -57,11 +57,11 @@ n - длина массива чисел</p>
 </ul>
 <h3>Ускорение и эффективность</h3>
 
-![AvgTime](https://user-images.githubusercontent.com/75146596/192174536-ed62b228-2601-400f-930d-93539fa16697.png)
+![AvgTime](https://user-images.githubusercontent.com/75146596/193953416-cba34470-71ea-4de8-8c0e-ba05ec835bd8.png)
 
-![Acceleration](https://user-images.githubusercontent.com/75146596/192174546-bd3a64c0-a8ca-4d93-8415-3977d8f81c30.png)
+![Acceleration](https://user-images.githubusercontent.com/75146596/193953423-793cf414-58f7-45b9-bd71-599c39e90f75.png)
 
-![Efficiency](https://user-images.githubusercontent.com/75146596/192174550-0e059cb8-4c86-49fe-9433-2a2cbbca8a01.png)
+![Efficiency](https://user-images.githubusercontent.com/75146596/193953426-f4ac8aaa-0f24-4f74-a06d-21a9fb92e559.png)
 
 
 <h3>Заключение</h3>
