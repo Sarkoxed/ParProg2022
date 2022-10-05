@@ -50,11 +50,12 @@
 </ul>
 <h3>Ускорение и эффективность</h3>
 
-![AvgTime](https://user-images.githubusercontent.com/75146596/193947847-86a33f53-33da-45fc-8aa6-dfdb185f2965.png)
+![AvgTime](https://user-images.githubusercontent.com/75146596/193953611-cfcf4d9d-df83-4dad-8567-d756af08bc90.png)
 
-![Acceleration](https://user-images.githubusercontent.com/75146596/193947859-0c5fd03f-ef05-43de-bba3-cb43b1c0d96b.png)
+![Acceleration](https://user-images.githubusercontent.com/75146596/193953618-54c51c82-7579-40b9-8274-2fe4ab1286be.png)
 
-![Efficiency](https://user-images.githubusercontent.com/75146596/193947869-5818d494-a26e-4ae8-a150-2929eb60627d.png)
+![Efficiency](https://user-images.githubusercontent.com/75146596/193953624-b0bd0b17-b09c-4088-8fee-bbc1f9ff22e7.png)
+
 
 <h3>Заключение</h3>
 В данной работе я написал свой первый параллельный цикл с использованием библитеки OpenMP на языке C. Также установил, что, возможно, я либо неправильно измеряю время, либо у меня проблемы с ноутбуком.
@@ -101,9 +102,8 @@ int main(int argc, char** argv)
         new_array(array, &random_seed, count);
         printf("ended array\n");
         target = array[rand() % count];
-        index = -1;
-        
         t1 = omp_get_wtime();
+        index = -1;
         for(int i=0; i<count; i++)
         {
             if(array[i] == target)
@@ -121,6 +121,7 @@ int main(int argc, char** argv)
     free(array);
     return(0);
 }
+
 ```
 
 <h4>Оценка работы параллельной программы</h4>
@@ -148,30 +149,34 @@ int main(int argc, char** argv)
 {
     const int count = 10000000;
     unsigned int random_seed = 920214;
-    const int num_exp = 10;
-    const int thread_bound = 10;
-
+    const int num_exp = 20;
+    const int thread_bound = 100;
+    
+    int** arrays = NULL;
     int* array = NULL;
     int  index, i, target, threads;
-    const int chunk = count / threads;
 
     double t1, t2, res;
 
-    array = (int*)calloc(count, sizeof(int));
+    arrays = (int**)calloc(num_exp, sizeof(int*));
+    for(int t = 0; t < num_exp; t++){
+        array = (int*)calloc(count, sizeof(int));
+        new_array(array, &random_seed, count);
+        arrays[t] = array;
+    }
 
     for(threads=1; threads <= thread_bound; threads++){
         fprintf(stderr, "curthreads: %d\n", threads);
         res = 0.0;
         for(int j = 0; j < num_exp; j++){
-            new_array(array, &random_seed, count);
-            target = array[rand() % count];
+            target = arrays[j][rand() % count];
             index = count + 1; 
             
             t1 = omp_get_wtime();
-            #pragma omp parallel for shared(array, count, target) default(none) private(i) num_threads(threads) reduction(min: index)
+            #pragma omp parallel for shared(arrays, count, target, j) default(none) private(i) num_threads(threads) reduction(min: index)
             for(i=0; i<count; i++){
 
-                if(array[i] == target){
+                if(arrays[j][i] == target){
                     index = i;
                 }
             }
@@ -180,9 +185,13 @@ int main(int argc, char** argv)
         }
         res /= (double)(num_exp);
         fprintf(stdout, "(%d, %g), ", threads, res);
-        random_seed = 920214; ///< RNG seed
     }
-    free(array);
+
+    for(int t = 0; t < num_exp; t++){
+        free(arrays[t]);
+    }
+    free(arrays);
     return(0);
 }
+
 ```
