@@ -35,7 +35,7 @@ def get_plot(ylabel, unit, unitbound, threadbound, filename, all_ts):
 
     p.margins(x=0, y=0)
 
-    step = datalen // 10
+    step = 2
     p.set_xticks(srange(0, datalen + 1, step))
     p.set_xticklabels([str(x) for x in srange(0, datalen + 1, step)])
 
@@ -44,11 +44,14 @@ def get_plot(ylabel, unit, unitbound, threadbound, filename, all_ts):
     p.set_yticklabels(
         [str(floor(100 * x) / 100.0) for x in srange(0, unitbound + step, step)]
     )
+    
+    for _ in range(3, 7):
+        p.axvline(x=2**_, color="red", linestyle="--", label="cores")
 
     p.figure.savefig(filename)
 
 
-threadbound = 100
+threadbound = 70
 ts = ts[:threadbound]
 
 ts = [[x[0], x[1] * 1000] for x in ts]
