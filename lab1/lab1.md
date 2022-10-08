@@ -41,7 +41,7 @@ n - длина массива чисел</p>
 <h4>Блок-схема</h4>
 
 ```mermaid
-    {{ graphstyle() }}
+    %%{ init : {"flowchart" : { "curve" : "stepAfter" }}}%%
     graph LR
         A(Начало) --> B(i: 0 -> n)
         
