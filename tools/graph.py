@@ -45,8 +45,7 @@ def get_plot(ylabel, unit, unitbound, threadbound, filename, all_ts):
         [str(floor(100 * x) / 100.0) for x in srange(0, unitbound + step, step)]
     )
     
-    for _ in range(3, 7):
-        p.axvline(x=2**_, color="red", linestyle="--", label="cores")
+    p.axvline(x=8, color="red", linestyle="-", label="cores")
 
     p.figure.savefig("graphs/" + filename)
 
