@@ -44,29 +44,36 @@ def get_plot(ylabel, unit, unitbound, threadbound, filename, all_ts):
     p.set_yticklabels(
         [str(floor(100 * x) / 100.0) for x in srange(0, unitbound + step, step)]
     )
-    
+
     p.axvline(x=8, color="red", linestyle="-", label="cores")
 
     p.figure.savefig("graphs/" + filename)
 
 
 threadbound = 70
+cores = 8
 ts = ts[:threadbound]
 
 ts = [[x[0], x[1] * 1000] for x in ts]
+
 ts_ds = [[x[0], x[1], "Real"] for x in ts]
 acc_ds = [[x[0], t_succ * 1000 / x[1], "Real"] for x in ts]
 eff_ds = [[x[0], x[1] / x[0], "Real"] for x in acc_ds]
 
-exp_ts = [[i, t_succ * 1000 / i, "Expected"] for i in range(1, threadbound + 1)]
-exp_acc = [[i, i, "Expected"] for i in range(1, threadbound + 1)]
-exp_eff = [[i, 1, "Expected"] for i in range(1, threadbound + 1)]
+exp_ts = [[i, t_succ * 1000 / i, "Expected"] for i in range(1, cores + 1)] + [
+    [i, t_succ * 1000 / cores, "Expected"] for i in range(cores + 1, threadbound + 1)
+]
+exp_acc = [[i, i, "Expected"] for i in range(1, cores + 1)] + [
+    [i, cores, "Expected"] for i in range(cores + 1, threadbound + 1)
+]
+exp_eff = [[i, 1, "Expected"] for i in range(1, cores + 1)] + [
+    [i, 1 / i, "Expected"] for i in range(cores + 1, threadbound + 1)
+]
 
 columns = ["Threads", "AvgTime", "Type"]
 got_ts_df = pd.DataFrame(ts_ds, columns=columns)
 exp_ts_df = pd.DataFrame(exp_ts, columns=columns)
 all_ts = pd.concat([got_ts_df, exp_ts_df])
-
 unitbound = int(ceil(max([x[1] for x in ts])))
 get_plot("AvgTime", "ms", unitbound, threadbound, "AvgTime.png", all_ts)
 
@@ -74,7 +81,6 @@ columns = ["Threads", "Acceleration", "Type"]
 got_acc_df = pd.DataFrame(acc_ds, columns=columns)
 exp_acc_df = pd.DataFrame(exp_acc, columns=columns)
 all_ts = pd.concat([got_acc_df, exp_acc_df])
-
 unitbound = max(
     int(ceil(max([x[1] for x in acc_ds]))), int(ceil(max([x[1] for x in exp_acc])))
 )
