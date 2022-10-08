@@ -73,11 +73,11 @@ n - длина массива чисел</p>
 </ul>
 <h3>Ускорение и эффективность</h3>
 
-![AvgTime](https://user-images.githubusercontent.com/75146596/193953416-cba34470-71ea-4de8-8c0e-ba05ec835bd8.png)
+![AvgTime](https://github.com/Sarkoxed/ParProg2022/blob/master/lab1/graphs/AvgTime.png)
 
-![Acceleration](https://user-images.githubusercontent.com/75146596/193953423-793cf414-58f7-45b9-bd71-599c39e90f75.png)
+![Acceleration](https://github.com/Sarkoxed/ParProg2022/blob/master/lab1/graphs/Acceleration.png)
 
-![Efficiency](https://user-images.githubusercontent.com/75146596/193953426-f4ac8aaa-0f24-4f74-a06d-21a9fb92e559.png)
+![Efficiency](https://github.com/Sarkoxed/ParProg2022/blob/master/lab1/graphs/Efficiency.png)
 
 
 <h3>Заключение</h3>
