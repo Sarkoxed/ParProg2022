@@ -41,8 +41,8 @@ n - длина массива чисел</p>
 <h4>Блок-схема</h4>
 
 ```mermaid
-    %%{ init : {"flowchart" : { "curve" : "stepAfter" }}}%%
-    graph LR
+    %%{ init : {"flowchart" : { "curve" : "stepAfter", "diagramPadding" : 20 }}}%%
+    graph TD
         A(Начало) --> B(i: 0 -> n)
         
         B --> C{"array[i] > max"}
