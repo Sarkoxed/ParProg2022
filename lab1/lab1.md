@@ -42,7 +42,7 @@ n - длина массива чисел</p>
 
 ```mermaid
     %%{ init : {"flowchart" : { "curve" : "stepAfter", "diagramPadding" : 20 }}}%%
-    graph LR
+    graph TD
         A(Начало) --> B(i: 0 -> n)
         
         B --> C{"array[i] > max"}
