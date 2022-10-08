@@ -73,15 +73,15 @@ n - длина массива чисел</p>
 </ul>
 <h3>Ускорение и эффективность</h3>
 
-![AvgTime](https://user-images.githubusercontent.com/75146596/192174536-ed62b228-2601-400f-930d-93539fa16697.png)
+![AvgTime](https://user-images.githubusercontent.com/75146596/193953416-cba34470-71ea-4de8-8c0e-ba05ec835bd8.png)
 
-![Acceleration](https://user-images.githubusercontent.com/75146596/192174546-bd3a64c0-a8ca-4d93-8415-3977d8f81c30.png)
+![Acceleration](https://user-images.githubusercontent.com/75146596/193953423-793cf414-58f7-45b9-bd71-599c39e90f75.png)
 
-![Efficiency](https://user-images.githubusercontent.com/75146596/192174550-0e059cb8-4c86-49fe-9433-2a2cbbca8a01.png)
+![Efficiency](https://user-images.githubusercontent.com/75146596/193953426-f4ac8aaa-0f24-4f74-a06d-21a9fb92e559.png)
 
 
 <h3>Заключение</h3>
-В данной работе я ознакомился с азами использования библиотеки OpenMP в языке программирования C. Также установил, что не всегда ожидаемое время работы и ускорение будут совпадать с реальными показателями.
+В данной работе я ознакомился с азами использования библиотеки OpenMP в языке программирования C. Также установил, что не всегда ожидаемое время работы и ускорение будут совпадать с реальными показателями. По графикам видно, что после 8 тредов прекращается рост ускорения и среднее время выполнения не уменьшается.
 <h3>Приложение</h3>
 <h4>Оценка работы последовательной программы</h4>
 
@@ -157,7 +157,7 @@ int main(int argc, char** argv)
 void new_array(int* array, unsigned int* random_seed, int count){
     srand(*random_seed);
     for(int j=0; j < count; j++){
-        array[j] = rand();
+        array[j] = rand(); 
     }
     *random_seed += rand();
 }
@@ -165,32 +165,37 @@ void new_array(int* array, unsigned int* random_seed, int count){
 
 int main(int argc, char** argv)
 {
-    const int count = 10000000;
-    int threads;
+    const int count = 10000000;   
+    int threads;         
     unsigned int random_seed = 920215; ///< RNG seed
     const int num_exp = 20;
     const int thread_bound = 256;
 
-    int* array = NULL;
-    int  max;
+    int* array = NULL;           
+    int** arrays = NULL;
+    int  max;                
     double t1, t2, res;
 
-    array = (int*)calloc(count, sizeof(int));
-
+    arrays = (int**)calloc(num_exp, sizeof(int*));
+    for(int t = 0; t < num_exp; t++){
+        array = (int*)calloc(count, sizeof(int));
+        new_array(array, &random_seed, count);
+        arrays[t] = array;
+    }
+    
     for(int threads = 1; threads <= thread_bound; threads++){
         fprintf(stderr, "curthreads: %d\n", threads);
         res = 0.0;
-        for(int i = 0; i < num_exp; i++){
-            new_array(array, &random_seed, count);
+        for(int j = 0; j < num_exp; j++){
             max = -1;
             t1 = omp_get_wtime();
-            #pragma omp parallel num_threads(threads) shared(array, count) reduction(max: max) default(none)
+            #pragma omp parallel num_threads(threads) shared(arrays, count, j) reduction(max: max) default(none)
             {
                 #pragma omp for
                 for(int i=0; i < count; i++)
                 {
-                    if(array[i] > max){
-                        max = array[i];
+                    if(arrays[j][i] > max){ 
+                        max = arrays[j][i];
                     }
                 }
             }
@@ -198,10 +203,14 @@ int main(int argc, char** argv)
             res += t2 - t1;
         }
         res /= (double)(num_exp);
-        fprintf(stdout, "(%d, %g), ", threads, res);
-        random_seed = 920215;
+        fprintf(stdout, "(%d, %g), ", threads, res); 
     }
-    free(array);
+
+    for(int t = 0; t < num_exp; t++){
+        free(arrays[t]);
+    }
+    free(arrays);
     return(0);
 }
+
 ```
