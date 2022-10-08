@@ -64,11 +64,11 @@
 </ul>
 <h3>Ускорение и эффективность</h3>
 
-![AvgTime](https://user-images.githubusercontent.com/75146596/193953611-cfcf4d9d-df83-4dad-8567-d756af08bc90.png)
+![AvgTime](https://github.com/Sarkoxed/ParProg2022/blob/master/lab2/graphs/AvgTime.png)
 
-![Acceleration](https://user-images.githubusercontent.com/75146596/193953618-54c51c82-7579-40b9-8274-2fe4ab1286be.png)
+![Acceleration](https://github.com/Sarkoxed/ParProg2022/blob/master/lab2/graphs/Acceleration.png)
 
-![Efficiency](https://user-images.githubusercontent.com/75146596/193953624-b0bd0b17-b09c-4088-8fee-bbc1f9ff22e7.png)
+![Efficiency](https://github.com/Sarkoxed/ParProg2022/blob/master/lab2/graphs/Efficiency.png)
 
 
 <h3>Заключение</h3>
