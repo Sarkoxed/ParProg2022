@@ -37,13 +37,12 @@ report: $(DIR).md
 
 .PHONY: graphs
 graphs: parallel.out ../tools/graph.py
-	-@mkdir graphs
 	@printf "t_succ = " > graphs/timing.py
 	@./successive.out >> graphs/timing.py
-	@printf "\nts = " >> graphs/timing.py
+	@printf "\nts = [" >> graphs/timing.py
 	@./parallel.out >> graphs/timing.py
-	@ln ../tools/graph.py graphs/graph.py
-	@python graphs/graph.py
+	@printf "]\n" >> graphs/timing.py
+	@python graphs/graph.py $(AVG) $(ACC) $(EFF)
 
 parallel.out: $(PAR_SRC)
 	@echo Building parallel
@@ -92,4 +91,4 @@ $(DIR).md: $(PAR_SRC) $(SUC_SRC) $(AVG) $(ACC) $(EFF)
 .PHONY: clean
 clean:
 	@echo Deleting *.out
-	-@rm *.out
+	@rm *.out 2>/dev/null || true
