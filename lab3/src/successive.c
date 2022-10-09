@@ -2,28 +2,56 @@
 #include <stdlib.h>
 #include <omp.h>
 
+void new_array(int*, unsigned int*, int);
+
 void new_array(int* array, unsigned int* random_seed, int count){
     srand(*random_seed);
     int i;
-    int threads = 16;
-    #pragma omp parallel for shared(array, count, chunk) default(none) private(i) num_threads(threads)
-    for(i=0; i<count; i++) { 
+    for(i=0; i < count; i++) { 
        array[i] = rand(); 
     }
     *random_seed += rand();
 }
 
 int main(){
-    const int count = 10000000;
+    const int count = 1000000;
     unsigned int random_seed = 1337;
-    const int num_exp = 1;
+    const int num_exp = 20;
     
-    //int**arrays = NULL;
+    int**arrays = NULL;
     int* array = NULL;
-    array = (int*)calloc(count, sizeof(int));
 
-    
+    arrays = (int**)calloc(num_exp, sizeof(int*));
+    for(int t = 0; t < num_exp; t++){
+        arrays[t] = (int*)calloc(count, sizeof(int));
+        new_array(arrays[t], &random_seed, count);
+    }
 
-    free(array);
+    double t1, t2, res = 0.0;
+
+    for(int e = 0; e < num_exp; e++){ 
+        fprintf(stderr, "Number of experiment: %d/%d\n", e+1, num_exp);
+        array = arrays[e];
+        
+        t1 = omp_get_wtime();
+        for(int gap = count/2; gap > 0; gap /= 2){
+            for(int i = gap; i < count; i++){
+                for(int j=i; j>=gap  && array[j-gap] > array[j]; j-=gap){
+                    int tmp = array[j];
+                    array[j] = array[j-gap];
+                    array[j-gap] = tmp;
+                }
+            }
+        }
+        t2 = omp_get_wtime();
+        res += t2 - t1;
+    }
+    res /= (double)(num_exp);
+    fprintf(stdout, "%g", res); 
+
+    for(int t = 0; t < num_exp; t++){
+        free(arrays[t]);
+    }
+    free(arrays);
     return 0;
 }
