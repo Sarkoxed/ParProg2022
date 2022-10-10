@@ -36,7 +36,7 @@ successive: successive.out
 report: $(DIR).md
 
 .PHONY: graphs
-graphs: parallel.out ../tools/graph.py
+graphs: successive.out parallel.out graphs/graph.py
 	@printf "t_succ = " > graphs/timing.py
 	@./successive.out >> graphs/timing.py
 	@printf "\nts = [" >> graphs/timing.py
