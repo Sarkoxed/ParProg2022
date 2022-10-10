@@ -4,7 +4,7 @@ CC = gcc
 CFLAGS = -Wall
 CFLAGS += -Wextra
 CFLAGS += -pedantic
-CFLAGS += -Werror
+#CFLAGS += -Werror
 CFLAGS += -Wmissing-declarations
 
 LIBS = -fopenmp
@@ -26,6 +26,11 @@ GIT = github.com/Sarkoxed/ParProg2022/blob/master/$(DIR)/
 
 all: parallel.out successive.out $(DIR).md
 
+.PHONY: check
+check: parallel_check.out
+	@echo "Checking that sort works fine"
+	@./parallel_check.out > check/arrs.py && python check/check.py 10
+
 .PHONY: parallel
 parallel: parallel.out
 
@@ -36,7 +41,7 @@ successive: successive.out
 report: $(DIR).md
 
 .PHONY: graphs
-graphs: parallel.out ../tools/graph.py
+graphs: successive.out parallel.out graphs/graph.py
 	@printf "t_succ = " > graphs/timing.py
 	@./successive.out >> graphs/timing.py
 	@printf "\nts = [" >> graphs/timing.py
@@ -44,8 +49,8 @@ graphs: parallel.out ../tools/graph.py
 	@printf "]\n" >> graphs/timing.py
 	@python graphs/graph.py $(AVG) $(ACC) $(EFF)
 
-parallel.out: $(PAR_SRC)
-	@echo Building parallel
+%.out: src/%.c
+	@echo Building $@
 	@$(CC) $(CFLAGS) $(ASANFLAGS) $^ -o $@ $(LIBS)
 
 successive.out: $(SUC_SRC)
