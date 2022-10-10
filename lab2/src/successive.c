@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+void new_array(int *, unsigned int *, int);
+
 void new_array(int *array, unsigned int *random_seed, int count) {
   srand(*random_seed);
   int i;
@@ -15,13 +17,13 @@ void new_array(int *array, unsigned int *random_seed, int count) {
   *random_seed += rand();
 }
 
-int main(int argc, char **argv) {
+int main() {
   const int count = 10000000;
   unsigned int random_seed = 920214;
   const int num_exp = 20;
 
   int *array = 0;
-  int index = -1;
+  int index;
 
   srand(random_seed);
 
