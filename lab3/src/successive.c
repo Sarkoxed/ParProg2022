@@ -14,9 +14,9 @@ void new_array(int* array, unsigned int* random_seed, int count){
 }
 
 int main(){
-    const int count = 1000000;
+    int count = 100000;
     unsigned int random_seed = 1337;
-    const int num_exp = 20;
+    const int num_exp = 10;
     
     int**arrays = NULL;
     int* array = NULL;
@@ -28,7 +28,6 @@ int main(){
     }
 
     double t1, t2, res = 0.0;
-
     for(int e = 0; e < num_exp; e++){ 
         fprintf(stderr, "Number of experiment: %d/%d\n", e+1, num_exp);
         array = arrays[e];
@@ -46,6 +45,7 @@ int main(){
         t2 = omp_get_wtime();
         res += t2 - t1;
     }
+//    printf("Num of iterations: %d, count: %d\n", r, count);
     res /= (double)(num_exp);
     fprintf(stdout, "%g", res); 
 
