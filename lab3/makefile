@@ -41,13 +41,35 @@ successive: successive.out
 report: $(DIR).md
 
 .PHONY: graphs
-graphs: successive.out parallel.out graphs/graph.py
+graphs: successive.out parallel.out graphs/graph.py parallel_asc.out parallel_desc.out parallel_rep.out
 	@printf "t_succ = " > graphs/timing.py
 	@./successive.out >> graphs/timing.py
 	@printf "\nts = [" >> graphs/timing.py
 	@./parallel.out >> graphs/timing.py
 	@printf "]\n" >> graphs/timing.py
 	@python graphs/graph.py $(AVG) $(ACC) $(EFF)
+	@printf "t_succ = " > graphs/timing.py
+	@./successive.out >> graphs/timing.py
+	@printf "\nts = [" >> graphs/timing.py
+	@./parallel_asc.out >> graphs/timing.py
+	@printf "]\n" >> graphs/timing.py
+	@python graphs/graph.py graphs/AvgTime_asc.png graphs/Acceleration_asc.png graphs/Efficiency_asc.png
+	@printf "t_succ = " > graphs/timing.py
+	@./successive.out >> graphs/timing.py
+	@printf "\nts = [" >> graphs/timing.py
+	@./parallel_desc.out >> graphs/timing.py
+	@printf "]\n" >> graphs/timing.py
+	@python graphs/graph.py graphs/AvgTime_desc.png graphs/Acceleration_desc.png graphs/Efficiency_desc.png
+	@printf "t_succ = " > graphs/timing.py
+	@./successive.out >> graphs/timing.py
+	@printf "\nts = [" >> graphs/timing.py
+	@./parallel_rep.out >> graphs/timing.py
+	@printf "]\n" >> graphs/timing.py
+	@python graphs/graph.py graphs/AvgTime_rep.png graphs/Acceleration_rep.png graphs/Efficiency_rep.png
+
+
+
+
 
 %.out: src/%.c
 	@echo Building $@
@@ -61,10 +83,10 @@ $(DIR).md: $(PAR_SRC) $(SUC_SRC) $(AVG) $(ACC) $(EFF)
 	echo $(DIR)
 	@echo "Creating report"
 	@printf "# НИЯУ МИФИ. Лабораторная работа №%s. Соколов Александр, Б20-505. 2022.\n" "$(shell (basename $(shell pwd) | sed 's/[^[:digit:]]//g'))" > $@
-	@printf "## Используемая система\n<pre>" >> $@
-	@inxi -Cx >> $@
+	@printf "## Среда разработки\n<pre>" >> $@
+	@sudo inxi -SCmxz >> $@
+	@printf "OpenMP:\n\tgcc: 201511\n" >> $@
 	@printf "</pre>\n" >> $@
-	@printf "## Среда разработки\n### Версия OpenMP\n<ul>\n\t<li><b>gcc</b>: 201511</li>\n\t<li><b>clang</b>:201811</li>\n</ul>\n" >> $@
 	@printf "\n## Временная оценка алгоритма\n\n" >> $@
 	
 	@printf "## Анализ алгоритма\n#### Принцип работы\n\n" >> $@
@@ -76,20 +98,22 @@ $(DIR).md: $(PAR_SRC) $(SUC_SRC) $(AVG) $(ACC) $(EFF)
 	@printf "\t\tB --> E(выход)\n" >> $@
 	@printf "\`\`\`\n\n" >> $@
 	@printf "## Значение директив\n" >> $@
-	@printf "<code>#pragma lol</code>\n" >> $@
+	@printf "<code>" >> $@
+	@cat src/parallel.c | grep "pragma omp" >> $@
+	@printf "</code>\n" >> $@
 	@printf "## Экспериментальные вычисления\n" >> $@
 	@printf "<ul>\n\t<li>Последовательный алгоритм:</li>\n</ul>\n" >> $@
-	@printf "\n$(GIT)$(AVG)\n\n" >> $@
-	@printf "\n$(GIT)$(ACC)\n\n" >> $@
-	@printf "\n$(GIT)$(EFF)\n\n" >> $@
+	@printf "\n![AvgTime](https://$(GIT)$(AVG))\n\n" >> $@
+	@printf "\n![Acceleration](https://$(GIT)$(ACC))\n\n" >> $@
+	@printf "\n![Efficiency](https://$(GIT)$(EFF))\n\n" >> $@
 	@printf "## Заключение\n" >> $@
 	@printf "## Приложение\n" >> $@
 	@printf "### Оценка работы последовательной программы\n" >> $@
-	@printf "\n\`\`\`c" >> $@
+	@printf "\n\`\`\`c\n" >> $@
 	@cat $(SUC_SRC) >> $@
 	@printf "\n\`\`\`\n" >> $@
 	@printf "### Оценка работы параллельной программы\n" >> $@
-	@printf "\n\`\`\`c" >> $@
+	@printf "\n\`\`\`c\n" >> $@
 	@cat $(PAR_SRC) >> $@
 	@printf "\n\`\`\`\n" >> $@
 
