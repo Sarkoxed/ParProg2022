@@ -13,12 +13,14 @@ void new_array(int* array, unsigned int* random_seed, int count){
     *random_seed += rand();
 }
 
-double shellsort(int* array, int count){
+double shellsort(int* array, int count, int* comp){
     double t1, t2;
+    *comp = 0;
     t1 = omp_get_wtime();
     for(int gap = count/2; gap > 0; gap /= 2){
         for(int i = gap; i < count; i++){
             for(int j=i; j>=gap  && array[j-gap] > array[j]; j-=gap){
+                *comp = *comp + 1;
                 int tmp = array[j];
                 array[j] = array[j-gap];
                 array[j-gap] = tmp;
@@ -44,15 +46,20 @@ int main(){
         new_array(arrays[t], &random_seed, count);
     }
 
-    double t1, t2, res = 0.0;
+    double res = 0.0;
+    int comp, res1 = 0;
+
     for(int e = 0; e < num_exp; e++){ 
         fprintf(stderr, "Number of experiment: %d/%d\n", e+1, num_exp);
         array = arrays[e];
-        res += shellsort(array, count);
+        res += shellsort(array, count, &comp);
+        res1 += comp;
     }
 //    printf("Num of iterations: %d, count: %d\n", r, count);
     res /= (double)(num_exp);
-    fprintf(stdout, "%g", res); 
+    fprintf(stdout, "%g\n", res); 
+//    fprintf(stdout, "%d\n", res1 / num_exp); 
+
 
     for(int t = 0; t < num_exp; t++){
         free(arrays[t]);
