@@ -63,7 +63,7 @@ ts = ts[:threadbound]
 t_succ = ts[0][1]
 
 ts = [[x[0], x[1] * 1000] for x in ts]
-ts_ds = [[x[0], x[1] * 1000, "Real"] for x in ts]
+ts_ds = [[x[0], x[1], "Real"] for x in ts]
 exp_ts = [[i, t_succ * 1000 / i, "Expected"] for i in range(1, cores + 1)] + [
     [i, t_succ * 1000 / cores, "Expected"] for i in range(cores + 1, threadbound + 1)
 ]
@@ -72,18 +72,18 @@ columns = ["Threads", "AvgTime", "Type"]
 got_ts_df = pd.DataFrame(ts_ds, columns=columns)
 exp_ts_df = pd.DataFrame(exp_ts, columns=columns)
 all_ts = pd.concat([got_ts_df, exp_ts_df]).astype({"Threads": "int64", "AvgTime": "float64"})
-#unitbound = int(ceil(max([x[1] for x in ts])))
+unitbound = int(ceil(max([x[1] for x in ts])))
 
-#get_plot(
-#    "AvgTime",
-#    "ms",
-#    unitbound,
-#    threadbound,
-#    argv[1],
-#    all_ts,
-#    max(ts_ds[0][1], exp_ts[0][1]),
-#)
+get_plot(
+    "AvgTime",
+    "ms",
+    unitbound,
+    threadbound,
+    argv[1],
+    all_ts,
+    max(ts_ds[0][1], exp_ts[0][1]),
+)
 #plt.clf()
 
-print(all_ts)
-p = sns.lineplot(x="Threads", y="AvgTime", hue="Type", marker=".", data=all_ts)
+#print(all_ts)
+#p = sns.lineplot(x="Threads", y="AvgTime", hue="Type", marker=".", data=all_ts)

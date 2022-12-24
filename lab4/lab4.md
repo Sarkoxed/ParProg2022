@@ -1,22 +1,22 @@
 # НИЯУ МИФИ. Лабораторная работа №4. Соколов Александр, Б20-505. 2022.
 ## Среда разработки
 <pre>System:
-  Kernel: 6.1.1-arch1-1 arch: x86_64 bits: 64 compiler: gcc v: 12.2.0
-    Desktop: MATE v: 1.26.0 Distro: Arch Linux
+  Kernel: 6.0.2-arch1-1 arch: x86_64 bits: 64 compiler: gcc v: 12.2.0
+    Desktop: GNOME v: 42.5 Distro: Arch Linux
 Memory:
-  RAM: total: 14.58 GiB used: 8.29 GiB (56.9%)
-  Array-1: capacity: 16 GiB slots: 2 EC: None max-module-size: 8 GiB
+  RAM: total: 15.57 GiB used: 3.1 GiB (19.9%)
+  Array-1: capacity: 32 GiB slots: 4 EC: None max-module-size: 8 GiB
     note: est.
-  Device-1: DIMM 0 type: DDR4 size: 8 GiB speed: 2400 MT/s
-  Device-2: DIMM 0 type: DDR4 size: 8 GiB speed: 2400 MT/s
+  Device-1: DIMM_A1 type: no module installed
+  Device-2: DIMM_A2 type: DDR3 size: 8 GiB speed: 1600 MT/s
+  Device-3: DIMM_B1 type: no module installed
+  Device-4: DIMM_B2 type: DDR3 size: 8 GiB speed: 1600 MT/s
 CPU:
-  Info: quad core model: AMD Ryzen 5 3500U with Radeon Vega Mobile Gfx
-    bits: 64 type: MT MCP arch: Zen/Zen+ note: check rev: 1 cache: L1: 384 KiB
-    L2: 2 MiB L3: 4 MiB
-  Speed (MHz): avg: 1575 high: 2100 min/max: 1400/2100 boost: enabled cores:
-    1: 1400 2: 1400 3: 1400 4: 2100 5: 1400 6: 2100 7: 1400 8: 1400
-    bogomips: 33551
-  Flags: avx avx2 ht lm nx pae sse sse2 sse3 sse4_1 sse4_2 sse4a ssse3 svm
+  Info: quad core model: Intel Core i5-4690 bits: 64 type: MCP arch: Haswell
+    rev: 3 cache: L1: 256 KiB L2: 1024 KiB L3: 6 MiB
+  Speed (MHz): avg: 3492 min/max: 800/3900 cores: 1: 3492 2: 3492 3: 3492
+    4: 3492 bogomips: 27945
+  Flags: avx avx2 ht lm nx pae sse sse2 sse3 sse4_1 sse4_2 ssse3 vmx
 OpenMP:
 	gcc: 201511
 </pre>
@@ -24,18 +24,17 @@ OpenMP:
 ```c
 Version: 201511
 Date(m/y): 11/2015
-Number of processors: 8
-Number of max threads: 8
+Number of processors: 4
+Number of max threads: 4
 Dynamic is enabled?: 0
 Timer precision: 1e-09s
 Nested parallelism enabled?: 0
 Max number of nested active parallel regions: 1
--1503900603
-Schedule kind is , chunk size is 32549
+Schedule kind is dynamic, chunk size is 1
 
 ```
 ## Значение директив
-<code>#pragma omp parallel for shared(arrays, count, target, j) default(none) private(i) num_threads(threads) reduction(min : index) schedule(guided, 2)
+<code>#pragma omp parallel for shared(arrays, count, target, j) default(none) private(i) num_threads(threads) reduction(min : index) schedule(static)
 </code>
 
 ```c
@@ -128,7 +127,7 @@ int main(){
     printf("Max number of nested active parallel regions: %d\n", omp_get_max_active_levels());
     omp_sched_t kind;
     int chunk_size;
-    printf("%d\n", kind);
+    omp_get_schedule(&kind, &chunk_size);
     printf("Schedule kind is %s, chunk size is %d\n", sched_type((int)kind), chunk_size);
 }
 
@@ -163,7 +162,7 @@ int main() {
 
   double t1, t2, res;
   
-  fprintf(stderr, "1\n");
+//  fprintf(stderr, "1\n");
   arrays = (int **)calloc(num_exp, sizeof(int *));
   for (int t = 0; t < num_exp; t++) {
     array = (int *)calloc(count, sizeof(int));
@@ -172,15 +171,15 @@ int main() {
   }
 
   for (threads = 1; threads <= thread_bound; threads++) {
-    fprintf(stderr, "curthreads: %d\n", threads);
+//    fprintf(stderr, "curthreads: %d\n", threads);
     res = 0.0;
     for (int j = 0; j < num_exp; j++) {
-      fprintf(stderr, "Exp: %d\n", j);
+//      fprintf(stderr, "Exp: %d\n", j);
       target = arrays[j][rand() % count];
       index = count + 1;
 
       t1 = omp_get_wtime();
-#pragma omp parallel for shared(arrays, count, target, j) default(none) private(i) num_threads(threads) reduction(min : index) schedule(guided, 2)
+#pragma omp parallel for shared(arrays, count, target, j) default(none) private(i) num_threads(threads) reduction(min : index) schedule(static)
       for (i = 0; i < count; i++) {
 
         if (arrays[j][i] == target) {
@@ -189,7 +188,9 @@ int main() {
       }
       t2 = omp_get_wtime();
       res += t2 - t1;
+      //fprintf(stdout, "%g, ",t2 - t1);
     }
+    //fprintf(stdout, "\n");
     res /= (double)(num_exp);
     fprintf(stdout, "(%d, %g), ", threads, res);
   }

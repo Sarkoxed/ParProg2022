@@ -34,6 +34,7 @@ report: $(DIR).md
 .PHONY: graphs
 graphs: parallel.out graphs/graph.py 
 	@echo "Static"
+	@cat src/parallel.c | grep schedule
 	@printf "ts = [" > graphs/timing.py
 	@./parallel.out >> graphs/timing.py
 	@printf "]\n" >> graphs/timing.py
@@ -41,6 +42,7 @@ graphs: parallel.out graphs/graph.py
 	@printf "t_succ = " > graphs/timing.py
 	@sed -i 's/schedule.static./schedule(static, 1)/' src/parallel.c
 	@echo "Static1"
+	@cat src/parallel.c | grep schedule
 	@printf "ts = [" > graphs/timing.py
 	@./parallel.out >> graphs/timing.py
 	@printf "]\n" >> graphs/timing.py
@@ -48,6 +50,7 @@ graphs: parallel.out graphs/graph.py
 	@printf "t_succ = " > graphs/timing.py
 	@sed -i 's/schedule.static. 1./schedule(static, 2)/' src/parallel.c
 	@echo "Static2"
+	@cat src/parallel.c | grep schedule
 	@printf "ts = [" > graphs/timing.py
 	@./parallel.out >> graphs/timing.py
 	@printf "]\n" >> graphs/timing.py
@@ -55,6 +58,7 @@ graphs: parallel.out graphs/graph.py
 	@printf "t_succ = " > graphs/timing.py
 	@sed -i 's/schedule.static. 2./schedule(dynamic)/' src/parallel.c
 	@echo "Dynamic"
+	@cat src/parallel.c | grep schedule
 	@printf "ts = [" > graphs/timing.py
 	@./parallel.out >> graphs/timing.py
 	@printf "]\n" >> graphs/timing.py
@@ -62,6 +66,7 @@ graphs: parallel.out graphs/graph.py
 	@printf "t_succ = " > graphs/timing.py
 	@sed -i 's/schedule.dynamic./schedule(dynamic, 2)/' src/parallel.c
 	@echo "Dynamic2"
+	@cat src/parallel.c | grep schedule
 	@printf "ts = [" > graphs/timing.py
 	@./parallel.out >> graphs/timing.py
 	@printf "]\n" >> graphs/timing.py
@@ -69,6 +74,7 @@ graphs: parallel.out graphs/graph.py
 	@printf "t_succ = " > graphs/timing.py
 	@sed -i 's/schedule.dynamic. 2./schedule(guided)/' src/parallel.c
 	@echo "Guieded 1"
+	@cat src/parallel.c | grep schedule
 	@printf "ts = [" > graphs/timing.py
 	@./parallel.out >> graphs/timing.py
 	@printf "]\n" >> graphs/timing.py
@@ -76,11 +82,13 @@ graphs: parallel.out graphs/graph.py
 	@printf "t_succ = " > graphs/timing.py
 	@sed -i 's/schedule.guided./schedule(guided, 2)/' src/parallel.c
 	@echo "Guieded 2"
+	@cat src/parallel.c | grep schedule
 	@printf "ts = [" > graphs/timing.py
 	@./parallel.out >> graphs/timing.py
 	@printf "]\n" >> graphs/timing.py
 	@python graphs/graph.py $(AVG)guided_2.png $(ACC)guided_2.png $(EFF)guided_2.png
 	@sed -i 's/schedule.guided. 2./schedule(static)/' src/parallel.c
+	@cat src/parallel.c | grep schedule
 
 %.out: src/%.c
 	@echo Building $@
