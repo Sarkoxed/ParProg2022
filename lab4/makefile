@@ -32,9 +32,10 @@ parallel: parallel.out
 report: $(DIR).md
 
 .PHONY: graphs
-graphs: parallel.out graphs/graph.py 
+graphs: src/parallel.c graphs/graph.py 
 	@echo "Static"
 	@cat src/parallel.c | grep schedule
+	@$(CC) $(CFLAGS) $(ASANFLAGS) src/parallel.c -o parallel.out $(LIBS)
 	@printf "ts = [" > graphs/timing.py
 	@./parallel.out >> graphs/timing.py
 	@printf "]\n" >> graphs/timing.py
@@ -43,6 +44,7 @@ graphs: parallel.out graphs/graph.py
 	@sed -i 's/schedule.static./schedule(static, 1)/' src/parallel.c
 	@echo "Static1"
 	@cat src/parallel.c | grep schedule
+	@$(CC) $(CFLAGS) $(ASANFLAGS) src/parallel.c -o parallel.out $(LIBS)
 	@printf "ts = [" > graphs/timing.py
 	@./parallel.out >> graphs/timing.py
 	@printf "]\n" >> graphs/timing.py
@@ -51,6 +53,7 @@ graphs: parallel.out graphs/graph.py
 	@sed -i 's/schedule.static. 1./schedule(static, 2)/' src/parallel.c
 	@echo "Static2"
 	@cat src/parallel.c | grep schedule
+	@$(CC) $(CFLAGS) $(ASANFLAGS) src/parallel.c -o parallel.out $(LIBS)
 	@printf "ts = [" > graphs/timing.py
 	@./parallel.out >> graphs/timing.py
 	@printf "]\n" >> graphs/timing.py
@@ -59,6 +62,7 @@ graphs: parallel.out graphs/graph.py
 	@sed -i 's/schedule.static. 2./schedule(dynamic)/' src/parallel.c
 	@echo "Dynamic"
 	@cat src/parallel.c | grep schedule
+	@$(CC) $(CFLAGS) $(ASANFLAGS) src/parallel.c -o parallel.out $(LIBS)
 	@printf "ts = [" > graphs/timing.py
 	@./parallel.out >> graphs/timing.py
 	@printf "]\n" >> graphs/timing.py
@@ -67,6 +71,7 @@ graphs: parallel.out graphs/graph.py
 	@sed -i 's/schedule.dynamic./schedule(dynamic, 2)/' src/parallel.c
 	@echo "Dynamic2"
 	@cat src/parallel.c | grep schedule
+	@$(CC) $(CFLAGS) $(ASANFLAGS) src/parallel.c -o parallel.out $(LIBS)
 	@printf "ts = [" > graphs/timing.py
 	@./parallel.out >> graphs/timing.py
 	@printf "]\n" >> graphs/timing.py
@@ -75,6 +80,7 @@ graphs: parallel.out graphs/graph.py
 	@sed -i 's/schedule.dynamic. 2./schedule(guided)/' src/parallel.c
 	@echo "Guieded 1"
 	@cat src/parallel.c | grep schedule
+	@$(CC) $(CFLAGS) $(ASANFLAGS) src/parallel.c -o parallel.out $(LIBS)
 	@printf "ts = [" > graphs/timing.py
 	@./parallel.out >> graphs/timing.py
 	@printf "]\n" >> graphs/timing.py
@@ -83,6 +89,7 @@ graphs: parallel.out graphs/graph.py
 	@sed -i 's/schedule.guided./schedule(guided, 2)/' src/parallel.c
 	@echo "Guieded 2"
 	@cat src/parallel.c | grep schedule
+	@$(CC) $(CFLAGS) $(ASANFLAGS) src/parallel.c -o parallel.out $(LIBS)
 	@printf "ts = [" > graphs/timing.py
 	@./parallel.out >> graphs/timing.py
 	@printf "]\n" >> graphs/timing.py

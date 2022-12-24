@@ -82,8 +82,5 @@ get_plot(
     argv[1],
     all_ts,
     max(ts_ds[0][1], exp_ts[0][1]),
+    4
 )
-#plt.clf()
-
-#print(all_ts)
-#p = sns.lineplot(x="Threads", y="AvgTime", hue="Type", marker=".", data=all_ts)

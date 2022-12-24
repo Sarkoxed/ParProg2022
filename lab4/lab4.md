@@ -4,7 +4,7 @@
   Kernel: 6.0.2-arch1-1 arch: x86_64 bits: 64 compiler: gcc v: 12.2.0
     Desktop: GNOME v: 42.5 Distro: Arch Linux
 Memory:
-  RAM: total: 15.57 GiB used: 3.1 GiB (19.9%)
+  RAM: total: 15.57 GiB used: 2.78 GiB (17.8%)
   Array-1: capacity: 32 GiB slots: 4 EC: None max-module-size: 8 GiB
     note: est.
   Device-1: DIMM_A1 type: no module installed
@@ -14,8 +14,8 @@ Memory:
 CPU:
   Info: quad core model: Intel Core i5-4690 bits: 64 type: MCP arch: Haswell
     rev: 3 cache: L1: 256 KiB L2: 1024 KiB L3: 6 MiB
-  Speed (MHz): avg: 3492 min/max: 800/3900 cores: 1: 3492 2: 3492 3: 3492
-    4: 3492 bogomips: 27945
+  Speed (MHz): avg: 3492 high: 3493 min/max: 800/3900 cores: 1: 3492 2: 3492
+    3: 3493 4: 3493 bogomips: 27945
   Flags: avx avx2 ht lm nx pae sse sse2 sse3 sse4_1 sse4_2 ssse3 vmx
 OpenMP:
 	gcc: 201511
