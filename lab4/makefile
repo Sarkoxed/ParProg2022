@@ -41,8 +41,8 @@ graphs: src/parallel.c graphs/graph.py
 	@printf "]\n" >> graphs/timing.py
 	@python graphs/graph.py $(AVG)static_1.png $(ACC)static_1.png $(EFF)static_1.png
 	@printf "t_succ = " > graphs/timing.py
-	@sed -i 's/schedule.static./schedule(static, 1)/' src/parallel.c
-	@echo "Static1"
+	@sed -i 's/schedule.static./schedule(static, 10)/' src/parallel.c
+	@echo "Static10"
 	@cat src/parallel.c | grep schedule
 	@$(CC) $(CFLAGS) $(ASANFLAGS) src/parallel.c -o parallel.out $(LIBS)
 	@printf "ts = [" > graphs/timing.py
@@ -50,8 +50,8 @@ graphs: src/parallel.c graphs/graph.py
 	@printf "]\n" >> graphs/timing.py
 	@python graphs/graph.py $(AVG)static_2.png $(ACC)static_2.png $(EFF)static_2.png
 	@printf "t_succ = " > graphs/timing.py
-	@sed -i 's/schedule.static. 1./schedule(static, 2)/' src/parallel.c
-	@echo "Static2"
+	@sed -i 's/schedule.static. 10./schedule(static, 1000)/' src/parallel.c
+	@echo "Static1000"
 	@cat src/parallel.c | grep schedule
 	@$(CC) $(CFLAGS) $(ASANFLAGS) src/parallel.c -o parallel.out $(LIBS)
 	@printf "ts = [" > graphs/timing.py
@@ -59,7 +59,7 @@ graphs: src/parallel.c graphs/graph.py
 	@printf "]\n" >> graphs/timing.py
 	@python graphs/graph.py $(AVG)static_3.png $(ACC)static_3.png $(EFF)static_3.png
 	@printf "t_succ = " > graphs/timing.py
-	@sed -i 's/schedule.static. 2./schedule(dynamic)/' src/parallel.c
+	@sed -i 's/schedule.static. 1000./schedule(dynamic)/' src/parallel.c
 	@echo "Dynamic"
 	@cat src/parallel.c | grep schedule
 	@$(CC) $(CFLAGS) $(ASANFLAGS) src/parallel.c -o parallel.out $(LIBS)
@@ -68,8 +68,8 @@ graphs: src/parallel.c graphs/graph.py
 	@printf "]\n" >> graphs/timing.py
 	@python graphs/graph.py $(AVG)dynamic_1.png $(ACC)dynamic_1.png $(EFF)dynamic_1.png
 	@printf "t_succ = " > graphs/timing.py
-	@sed -i 's/schedule.dynamic./schedule(dynamic, 2)/' src/parallel.c
-	@echo "Dynamic2"
+	@sed -i 's/schedule.dynamic./schedule(dynamic, 10)/' src/parallel.c
+	@echo "Dynamic10"
 	@cat src/parallel.c | grep schedule
 	@$(CC) $(CFLAGS) $(ASANFLAGS) src/parallel.c -o parallel.out $(LIBS)
 	@printf "ts = [" > graphs/timing.py
@@ -77,8 +77,17 @@ graphs: src/parallel.c graphs/graph.py
 	@printf "]\n" >> graphs/timing.py
 	@python graphs/graph.py $(AVG)dynamic_2.png $(ACC)dynamic_2.png $(EFF)dynamic_2.png
 	@printf "t_succ = " > graphs/timing.py
-	@sed -i 's/schedule.dynamic. 2./schedule(guided)/' src/parallel.c
-	@echo "Guieded 1"
+	@sed -i 's/schedule.dynamic. 10./schedule(dynamic, 1000)/' src/parallel.c
+	@echo "Dynamic1000"
+	@cat src/parallel.c | grep schedule
+	@$(CC) $(CFLAGS) $(ASANFLAGS) src/parallel.c -o parallel.out $(LIBS)
+	@printf "ts = [" > graphs/timing.py
+	@./parallel.out >> graphs/timing.py
+	@printf "]\n" >> graphs/timing.py
+	@python graphs/graph.py $(AVG)dynamic_3.png $(ACC)dynamic_3.png $(EFF)dynamic_3.png
+	@printf "t_succ = " > graphs/timing.py
+	@sed -i 's/schedule.dynamic. 1000./schedule(guided)/' src/parallel.c
+	@echo "Guieded"
 	@cat src/parallel.c | grep schedule
 	@$(CC) $(CFLAGS) $(ASANFLAGS) src/parallel.c -o parallel.out $(LIBS)
 	@printf "ts = [" > graphs/timing.py
@@ -86,15 +95,24 @@ graphs: src/parallel.c graphs/graph.py
 	@printf "]\n" >> graphs/timing.py
 	@python graphs/graph.py $(AVG)guided_1.png $(ACC)guided_1.png $(EFF)guided_1.png
 	@printf "t_succ = " > graphs/timing.py
-	@sed -i 's/schedule.guided./schedule(guided, 2)/' src/parallel.c
-	@echo "Guieded 2"
+	@sed -i 's/schedule.guided./schedule(guided, 10)/' src/parallel.c
+	@echo "Guieded 10"
 	@cat src/parallel.c | grep schedule
 	@$(CC) $(CFLAGS) $(ASANFLAGS) src/parallel.c -o parallel.out $(LIBS)
 	@printf "ts = [" > graphs/timing.py
 	@./parallel.out >> graphs/timing.py
 	@printf "]\n" >> graphs/timing.py
 	@python graphs/graph.py $(AVG)guided_2.png $(ACC)guided_2.png $(EFF)guided_2.png
-	@sed -i 's/schedule.guided. 2./schedule(static)/' src/parallel.c
+	@printf "t_succ = " > graphs/timing.py
+	@sed -i 's/schedule.guided. 10./schedule(guided, 1000)/' src/parallel.c
+	@echo "Guided 1000"
+	@cat src/parallel.c | grep schedule
+	@$(CC) $(CFLAGS) $(ASANFLAGS) src/parallel.c -o parallel.out $(LIBS)
+	@printf "ts = [" > graphs/timing.py
+	@./parallel.out >> graphs/timing.py
+	@printf "]\n" >> graphs/timing.py
+	@python graphs/graph.py $(AVG)guided_3.png $(ACC)guided_3.png $(EFF)guided_3.png
+	@sed -i 's/schedule.guided. 1000./schedule(static)/' src/parallel.c
 	@cat src/parallel.c | grep schedule
 
 %.out: src/%.c
@@ -126,19 +144,23 @@ $(DIR).md: graphs $(PAR_SRC) chars.out src/lock.c
 	@printf "## Экспериментальные вычисления\n" >> $@
 	@printf "\nStatic" >> $@
 	@printf "\n![AvgTime](https://$(GIT)$(AVG)static_1.png)\n\n" >> $@
-	@printf "\nStatic1" >> $@
+	@printf "\nStatic10" >> $@
 	@printf "\n![AvgTime](https://$(GIT)$(AVG)static_2.png)\n\n" >> $@
-	@printf "\nStatic2" >> $@
+	@printf "\nStatic1000" >> $@
 	@printf "\n![AvgTime](https://$(GIT)$(AVG)static_3.png)\n\n" >> $@
 	@printf "\nDynamic" >> $@
 	@printf "\n![AvgTime](https://$(GIT)$(AVG)dynamic_1.png)\n\n" >> $@
-	@printf "\nDynamic2" >> $@
+	@printf "\nDynamic10" >> $@
 	@printf "\n![AvgTime](https://$(GIT)$(AVG)dynamic_2.png)\n\n" >> $@
-	@printf "\nGuieded1" >> $@
+	@printf "\nDynamic1000" >> $@
+	@printf "\n![AvgTime](https://$(GIT)$(AVG)dynamic_3.png)\n\n" >> $	
+	@printf "\nGuieded" >> $@
 	@printf "\n![AvgTime](https://$(GIT)$(AVG)guided_1.png)\n\n" >> $@
-	@printf "\nGuided2" >> $@
+	@printf "\nGuided10" >> $@
 	@printf "\n![AvgTime](https://$(GIT)$(AVG)guided_2.png)\n\n" >> $@
-	@printf "## Заключение\n" >> $@
+	@printf "\nGuided10" >> $@
+	@printf "\n![AvgTime](https://$(GIT)$(AVG)guided_2.png)\n\n" >> $@
+		@printf "## Заключение\n" >> $@
 	@printf "## Приложение\n" >> $@
 	@printf "### Оценка работы параллельной программы\n" >> $@
 	@printf "\n\`\`\`c\n" >> $@

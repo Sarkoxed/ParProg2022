@@ -58,7 +58,7 @@ int main() {
     res /= (double)(num_exp);
     fprintf(stdout, "(%d, %g), ", threads, res);
   }
-
+  fprintf(stderr, "%d\n", index); 
   for (int t = 0; t < num_exp; t++) {
     free(arrays[t]);
   }
