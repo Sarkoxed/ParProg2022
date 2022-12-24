@@ -26,7 +26,7 @@ int main() {
 
   double t1, t2, res;
   
-  fprintf(stderr, "1\n");
+//  fprintf(stderr, "1\n");
   arrays = (int **)calloc(num_exp, sizeof(int *));
   for (int t = 0; t < num_exp; t++) {
     array = (int *)calloc(count, sizeof(int));
@@ -35,15 +35,15 @@ int main() {
   }
 
   for (threads = 1; threads <= thread_bound; threads++) {
-    fprintf(stderr, "curthreads: %d\n", threads);
+//    fprintf(stderr, "curthreads: %d\n", threads);
     res = 0.0;
     for (int j = 0; j < num_exp; j++) {
-      fprintf(stderr, "Exp: %d\n", j);
+//      fprintf(stderr, "Exp: %d\n", j);
       target = arrays[j][rand() % count];
       index = count + 1;
 
       t1 = omp_get_wtime();
-#pragma omp parallel for shared(arrays, count, target, j) default(none) private(i) num_threads(threads) reduction(min : index) schedule(guided, 2)
+#pragma omp parallel for shared(arrays, count, target, j) default(none) private(i) num_threads(threads) reduction(min : index) schedule(static)
       for (i = 0; i < count; i++) {
 
         if (arrays[j][i] == target) {
@@ -52,9 +52,11 @@ int main() {
       }
       t2 = omp_get_wtime();
       res += t2 - t1;
+      fprintf(stdout, "%g, ",t2 - t1);
     }
+    fprintf(stdout, "\n");
     res /= (double)(num_exp);
-    fprintf(stdout, "(%d, %g), ", threads, res);
+    //fprintf(stdout, "(%d, %g), ", threads, res);
   }
 
   for (int t = 0; t < num_exp; t++) {
