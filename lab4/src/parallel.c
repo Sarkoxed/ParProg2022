@@ -52,11 +52,11 @@ int main() {
       }
       t2 = omp_get_wtime();
       res += t2 - t1;
-      fprintf(stdout, "%g, ",t2 - t1);
+      //fprintf(stdout, "%g, ",t2 - t1);
     }
-    fprintf(stdout, "\n");
+    //fprintf(stdout, "\n");
     res /= (double)(num_exp);
-    //fprintf(stdout, "(%d, %g), ", threads, res);
+    fprintf(stdout, "(%d, %g), ", threads, res);
   }
 
   for (int t = 0; t < num_exp; t++) {
