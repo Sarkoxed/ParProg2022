@@ -21,22 +21,42 @@ OpenMP:
 	gcc: 201511
 </pre>
 
-```c
+1. Определить дату принятия используемого стандарта OpenMP
+```
 Version: 201511
 Date(m/y): 11/2015
+```
+
+2. Количество доступных процессоров - 4, количество доступных потоков - 4
+```
 Number of processors: 4
 Number of max threads: 4
+```
+
+3. `dynamic` - показавает, возможно ли динамически настравивать количество используемых потоков во время работы программы
+```
 Dynamic is enabled?: 0
+```
+
+4. Разрешение таймера:
+```
 Timer precision: 1e-09s
+```
+
+5. Особенности работы со вложенными параллельными областями 
+```
 Nested parallelism enabled?: 0
 Max number of nested active parallel regions: 1
-Schedule kind is dynamic, chunk size is 1
-
 ```
-## Значение директив
-<code>#pragma omp parallel for shared(arrays, count, target, j) default(none) private(i) num_threads(threads) reduction(min : index) schedule(static)
-</code>
 
+6. Текущее распределение нагрузки:
+```
+Schedule kind is dynamic, chunk size is 1
+```
+
+## * <strong>все данные получены с помощью программы 1 в приложении</strong>
+
+7. Пример использования замков
 ```c
 #include <stdio.h>
 #include <unistd.h>
@@ -62,9 +82,22 @@ int main(){
     omp_destroy_lock(&lock);
     printf("%d\n", g);
 }
-
 ```
+Если честно необходимости исользования lock'ов тут нет. Спокойно можно было бы обойтись atomic. Однако если все же использовать локи, то без них доступ к переменной g был бы у всех потоков одновременно, что привело бы к неопределенному поведению. Замки же помогают разграничить доступ к ней, чтобы в данный момент времени ее мог изменять только поток обладающий замком, а остальные ждут пока замок не освободится.
+
+## Значение директив
+<code>#pragma omp parallel for shared(arrays, count, target, j) default(none) private(i) num_threads(threads) reduction(min : index) schedule(static)
+</code>
+
 ## Экспериментальные вычисления
+Размеры используемых чанков:
+- Static, default
+- Static, 1
+- Static, 2
+- Dynamic, 1
+- Dynamic, 2
+- Guided, 1
+- Guided, 2
 
 Static
 ![AvgTime](https://github.com/Sarkoxed/ParProg2022/blob/master/lab4/graphs/AvgTimestatic_1.png)
@@ -97,6 +130,7 @@ Guided2
 ## Приложение
 ### Оценка работы параллельной программы
 
+#### Программа 1
 ```c
 #include <omp.h> 
 #include <stdio.h>
@@ -133,6 +167,7 @@ int main(){
 
 ```
 
+#### Программа 2
 ```c
 #include <omp.h>
 #include <stdio.h>
@@ -180,6 +215,12 @@ int main() {
 
       t1 = omp_get_wtime();
 #pragma omp parallel for shared(arrays, count, target, j) default(none) private(i) num_threads(threads) reduction(min : index) schedule(static)
+//#pragma omp parallel for shared(arrays, count, target, j) default(none) private(i) num_threads(threads) reduction(min : index) schedule(static, 1)
+//#pragma omp parallel for shared(arrays, count, target, j) default(none) private(i) num_threads(threads) reduction(min : index) schedule(static, 2)
+//#pragma omp parallel for shared(arrays, count, target, j) default(none) private(i) num_threads(threads) reduction(min : index) schedule(dynamic, 1)
+//#pragma omp parallel for shared(arrays, count, target, j) default(none) private(i) num_threads(threads) reduction(min : index) schedule(dynamic, 2)
+//#pragma omp parallel for shared(arrays, count, target, j) default(none) private(i) num_threads(threads) reduction(min : index) schedule(guided, 1)
+//#pragma omp parallel for shared(arrays, count, target, j) default(none) private(i) num_threads(threads) reduction(min : index) schedule(guided, 2)
       for (i = 0; i < count; i++) {
 
         if (arrays[j][i] == target) {
@@ -201,5 +242,4 @@ int main() {
   free(arrays);
   return (0);
 }
-
 ```
