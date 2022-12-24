@@ -27,6 +27,6 @@ int main(){
     printf("Max number of nested active parallel regions: %d\n", omp_get_max_active_levels());
     omp_sched_t kind;
     int chunk_size;
-    omp_get_schedule(&kind, &chunk_size);
+    printf("%d\n", kind);
     printf("Schedule kind is %s, chunk size is %d\n", sched_type((int)kind), chunk_size);
 }

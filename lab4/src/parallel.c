@@ -8,10 +8,6 @@ void new_array(int *, unsigned int *, int);
 void new_array(int *array, unsigned int *random_seed, int count) {
   srand(*random_seed);
   int i;
-  int threads = 16;
-  int chunk = count / threads;
-#pragma omp parallel for shared(array, count, chunk) default(none) private(i)  \
-    schedule(guided, 2) chunk) num_threads(threads)
   for (i = 0; i < count; i++) {
     array[i] = rand();
   }
