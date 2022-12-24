@@ -58,7 +58,7 @@ def get_plot(ylabel, unit, unitbound, threadbound, filename, all_ts, ymax, cores
 
 
 threadbound = 16
-cores = 8
+cores = 4
 ts = ts[:threadbound]
 t_succ = ts[0][1]
 
@@ -82,5 +82,5 @@ get_plot(
     argv[1],
     all_ts,
     max(ts_ds[0][1], exp_ts[0][1]),
-    4
+    cores
 )
