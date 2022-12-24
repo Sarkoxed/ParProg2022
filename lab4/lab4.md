@@ -91,23 +91,28 @@ int main(){
 
 ## Экспериментальные вычисления
 Размеры используемых чанков:
-- Static, default
-- Static, 1
-- Static, 2
-- Dynamic, 1
-- Dynamic, 2
-- Guided, 1
-- Guided, 2
+- Static
+  - default
+  - 10
+  - 1000
+- Dynamic, 
+  - default
+  - 10
+  - 1000
+- Guided
+  - default
+  - 10
+  - 1000
 
 Static
 ![AvgTime](https://github.com/Sarkoxed/ParProg2022/blob/master/lab4/graphs/AvgTimestatic_1.png)
 
 
-Static1
+Static10
 ![AvgTime](https://github.com/Sarkoxed/ParProg2022/blob/master/lab4/graphs/AvgTimestatic_2.png)
 
 
-Static2
+Static1000
 ![AvgTime](https://github.com/Sarkoxed/ParProg2022/blob/master/lab4/graphs/AvgTimestatic_3.png)
 
 
@@ -115,16 +120,23 @@ Dynamic
 ![AvgTime](https://github.com/Sarkoxed/ParProg2022/blob/master/lab4/graphs/AvgTimedynamic_1.png)
 
 
-Dynamic2
+Dynamic10
 ![AvgTime](https://github.com/Sarkoxed/ParProg2022/blob/master/lab4/graphs/AvgTimedynamic_2.png)
 
 
-Guieded1
+Dynamic1000
+![AvgTime](https://github.com/Sarkoxed/ParProg2022/blob/master/lab4/graphs/AvgTimedynamic_3.png)
+
+
+Guieded
 ![AvgTime](https://github.com/Sarkoxed/ParProg2022/blob/master/lab4/graphs/AvgTimeguided_1.png)
 
 
-Guided2
+Guided10
 ![AvgTime](https://github.com/Sarkoxed/ParProg2022/blob/master/lab4/graphs/AvgTimeguided_2.png)
+
+Guided1000
+![AvgTime](https://github.com/Sarkoxed/ParProg2022/blob/master/lab4/graphs/AvgTimeguided_3.png)
 
 ## Заключение
 ## Приложение
