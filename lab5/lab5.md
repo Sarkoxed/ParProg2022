@@ -43,13 +43,13 @@ mpirun (Open MPI) 4.1.4
 	<li>Последовательный алгоритм:</li>
 </ul>
 
-github.com/Sarkoxed/ParProg2022/blob/master/lab5/graphs/AvgTime.png
+![AvgTime](github.com/Sarkoxed/ParProg2022/blob/master/lab5/graphs/AvgTime.png)
 
 
-github.com/Sarkoxed/ParProg2022/blob/master/lab5/graphs/Acceleration.png
+![Acceleration](github.com/Sarkoxed/ParProg2022/blob/master/lab5/graphs/Acceleration.png)
 
 
-github.com/Sarkoxed/ParProg2022/blob/master/lab5/graphs/Efficiency.png
+![Efficiency](github.com/Sarkoxed/ParProg2022/blob/master/lab5/graphs/Efficiency.png)
 
 ## Заключение
 ## Приложение
