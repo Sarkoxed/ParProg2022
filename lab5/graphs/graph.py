@@ -56,13 +56,17 @@ def get_plot(ylabel, unit, unitbound, threadbound, filename, all_ts, ymax, cores
     p.figure.savefig(filename)
 
 
-threadbound = 16
+threadbound = 15
 cores = 8
 ts = ts[:threadbound]
+ts_old = ts_old[:threadbound]
 t_succ = ts[0][1]
 t_succ1 = ts_old[0][1]
 
 ts = [[x[0], x[1] * 1000] for x in ts]
+print(ts)
+ts_old = [[x[0], x[1] * 1000] for x in ts_old]
+print(ts_old)
 
 ts_ds = [[x[0], x[1], "MPI"] for x in ts]
 acc_ds = [[x[0], t_succ * 1000 / x[1], "MPI"] for x in ts]

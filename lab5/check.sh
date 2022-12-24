@@ -2,5 +2,8 @@
 
 for i in $(seq 1 16);
 do
-    mpirun --hostfile hostfile -np "$i" parallel.out
+    for _ in $(seq 1 20);
+    do
+        mpirun --hostfile hostfile -np "$i" parallel.out
+    done
 done

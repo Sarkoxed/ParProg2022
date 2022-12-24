@@ -14,8 +14,7 @@ DEBUGFLAGS += -ggdb
 
 ASANFLAGS = -fsanitize=address
 
-PAR_SRC = src/parallel.c
-SUC_SRC = src/successive.c
+PAR_SRC = src/parallel.cpp
 DIR = $(shell basename $(shell pwd))
 
 AVG = graphs/AvgTime.png
@@ -52,16 +51,16 @@ successive.out: $(SUC_SRC)
 	@echo Building successive
 	@$(CC) $(CFLAGS) $(ASANFLAGS) $^ -o $@ $(LIBS)
 
-$(DIR).md: $(PAR_SRC) $(SUC_SRC) $(AVG) $(ACC) $(EFF)
+$(DIR).md: $(PAR_SRC)
 	echo $(DIR)
 	@echo "Creating report"
 	@printf "# НИЯУ МИФИ. Лабораторная работа №%s. Соколов Александр, Б20-505. 2022.\n" "$(shell (basename $(shell pwd) | sed 's/[^[:digit:]]//g'))" > $@
-	@printf "## Используемая система\n<pre>" >> $@
-	@inxi -Cx >> $@
+	@printf "## Среда разработки\n<pre>" >> $@
+	@sudo inxi -SCmxz >> $@
+	@printf "OpenMP:\n\tgcc: 201511\n" >> $@
 	@printf "</pre>\n" >> $@
-	@printf "## Среда разработки\n### Версия openMPI\n<ul>\n\t<li><b>gcc</b>: 4.1.4</li>\n\t<li><b>clang</b>:201811</li>\n</ul>\n" >> $@
+	@printf "\n\`\`\`c\n" >> $@
 	@printf "\n## Временная оценка алгоритма\n\n" >> $@
-	
 	@printf "## Анализ алгоритма\n#### Принцип работы\n\n" >> $@
 	@printf "#### Блок-схема\n\n\`\`\`mermaid\n\t" >> $@
 	@echo "%%{ init : { \"flowchart\" : { \"curve\" : \"stepAfter\" }}}%%" >> $@
@@ -79,10 +78,6 @@ $(DIR).md: $(PAR_SRC) $(SUC_SRC) $(AVG) $(ACC) $(EFF)
 	@printf "\n$(GIT)$(EFF)\n\n" >> $@
 	@printf "## Заключение\n" >> $@
 	@printf "## Приложение\n" >> $@
-	@printf "### Оценка работы последовательной программы\n" >> $@
-	@printf "\n\`\`\`c" >> $@
-	@cat $(SUC_SRC) >> $@
-	@printf "\n\`\`\`\n" >> $@
 	@printf "### Оценка работы параллельной программы\n" >> $@
 	@printf "\n\`\`\`c" >> $@
 	@cat $(PAR_SRC) >> $@
