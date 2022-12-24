@@ -6,7 +6,7 @@ from timing import ts, t_succ
 from sys import argv
 
 
-def get_plot(ylabel, unit, unitbound, threadbound, filename, all_ts, ymax, cores=8):
+def get_plot(ylabel, unit, unitbound, threadbound, filename, all_ts, ymax, cores=4):
     plt.clf()
     datalen = threadbound
 
@@ -56,7 +56,7 @@ def get_plot(ylabel, unit, unitbound, threadbound, filename, all_ts, ymax, cores
 
 
 threadbound = 16
-cores = 8
+cores = 4
 ts = ts[:threadbound]
 t_succ = ts[0][1]
 
@@ -66,35 +66,37 @@ ts_ds = [[x[0], x[1], "Real"] for x in ts]
 acc_ds = [[x[0], t_succ * 1000 / x[1], "Real"] for x in ts]
 eff_ds = [[x[0], x[1] / x[0], "Real"] for x in acc_ds]
 
-exp_ts = [[i, t_succ * 1000 / i, "Expected"] for i in range(1, cores + 1)] + [
-    [i, t_succ * 1000 / cores, "Expected"] for i in range(cores + 1, threadbound + 1)
-]
-exp_acc = [[i, i, "Expected"] for i in range(1, cores + 1)] + [
-    [i, cores, "Expected"] for i in range(cores + 1, threadbound + 1)
-]
-exp_eff = [[i, 1, "Expected"] for i in range(1, cores + 1)] + [
-    [i, cores / i, "Expected"] for i in range(cores + 1, threadbound + 1)
-]
+#exp_ts = [[i, t_succ * 1000 / i, "Expected"] for i in range(1, cores + 1)] + [
+#    [i, t_succ * 1000 / cores, "Expected"] for i in range(cores + 1, threadbound + 1)
+#]
+#exp_acc = [[i, i, "Expected"] for i in range(1, cores + 1)] + [
+#    [i, cores, "Expected"] for i in range(cores + 1, threadbound + 1)
+#]
+#exp_eff = [[i, 1, "Expected"] for i in range(1, cores + 1)] + [
+#    [i, cores / i, "Expected"] for i in range(cores + 1, threadbound + 1)
+#]
 
 columns = ["Threads", "AvgTime", "Type"]
 got_ts_df = pd.DataFrame(ts_ds, columns=columns)
-exp_ts_df = pd.DataFrame(exp_ts, columns=columns)
-all_ts = pd.concat([got_ts_df, exp_ts_df])
+all_ts = got_ts_df
+#exp_ts_df = pd.DataFrame(exp_ts, columns=columns)
+#all_ts = pd.concat([got_ts_df, exp_ts_df])
 unitbound = int(ceil(max([x[1] for x in ts])))
-get_plot("AvgTime", "ms", unitbound, threadbound, argv[1], all_ts, max(ts_ds[0][1], exp_ts[0][1]))
+get_plot("AvgTime", "ms", unitbound, threadbound, argv[1], all_ts, ts_ds[0][1])
 
 columns = ["Threads", "Acceleration", "Type"]
 got_acc_df = pd.DataFrame(acc_ds, columns=columns)
-exp_acc_df = pd.DataFrame(exp_acc, columns=columns)
-all_ts = pd.concat([got_acc_df, exp_acc_df])
-unitbound = max(
-    int(ceil(max([x[1] for x in acc_ds]))), int(ceil(max([x[1] for x in exp_acc])))
+#exp_acc_df = pd.DataFrame(exp_acc, columns=columns)
+#all_ts = pd.concat([got_acc_df, exp_acc_df])
+all_ts = got_acc_df
+unitbound = int(ceil(max([x[1] for x in acc_ds]))
 )
-get_plot("Acceleration", "times", unitbound, threadbound, argv[2], all_ts, max(acc_ds[cores-1][1], exp_acc[cores-1][1]))
+get_plot("Acceleration", "times", unitbound, threadbound, argv[2], all_ts, (acc_ds[cores-1][1]))
 
 columns = ["Threads", "Efficiency", "Type"]
 got_eff_df = pd.DataFrame(eff_ds, columns=columns)
-exp_eff_df = pd.DataFrame(exp_eff, columns=columns)
-all_ts = pd.concat([got_eff_df, exp_eff_df])
+#exp_eff_df = pd.DataFrame(exp_eff, columns=columns)
+#all_ts = pd.concat([got_eff_df, exp_eff_df])
+all_ts = got_eff_df
 unitbound = int(ceil(max([x[1] for x in eff_ds])))
-get_plot("Efficiency", "thread^-1", unitbound, threadbound, argv[3], all_ts, max(eff_ds[0][1], exp_eff[0][1]))
+get_plot("Efficiency", "thread^-1", unitbound, threadbound, argv[3], all_ts, (eff_ds[0][1]))
