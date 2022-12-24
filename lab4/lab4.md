@@ -85,12 +85,8 @@ int main(){
 ```
 Если честно необходимости исользования lock'ов тут нет. Спокойно можно было бы обойтись atomic. Однако если все же использовать локи, то без них доступ к переменной g был бы у всех потоков одновременно, что привело бы к неопределенному поведению. Замки же помогают разграничить доступ к ней, чтобы в данный момент времени ее мог изменять только поток обладающий замком, а остальные ждут пока замок не освободится.
 
-## Значение директив
-<code>#pragma omp parallel for shared(arrays, count, target, j) default(none) private(i) num_threads(threads) reduction(min : index) schedule(static)
-</code>
-
 ## Экспериментальные вычисления
-Размеры используемых чанков:
+Типы scedule и размеры используемых чанков:
 - Static
   - default
   - 10
@@ -103,6 +99,10 @@ int main(){
   - default
   - 10
   - 1000
+
+`static` - в целом, до 4 потоков все одинаково. Однако в случае малого размера чанка существенное падение производительности после 4.
+`dynamic` - всё очень плохо как с default значением чанка, так и с 10. Однако при размере чанка 1000 все становится в норме.
+`guided` - показал лучший результат на всех трех значениях чанка.
 
 Static
 ![AvgTime](https://github.com/Sarkoxed/ParProg2022/blob/master/lab4/graphs/AvgTimestatic_1.png)
@@ -139,9 +139,9 @@ Guided1000
 ![AvgTime](https://github.com/Sarkoxed/ParProg2022/blob/master/lab4/graphs/AvgTimeguided_3.png)
 
 ## Заключение
-## Приложение
-### Оценка работы параллельной программы
+В данной работе были рассмотрены основные функции среды OpenMP, позволяющие получать её характеристики во премя исполнения программы. Был рассмотрен механизм замко и предложен бесполезный алгоритм использования. Были сравнены различные типы scedule, использующиеся в циклах для распределения нагрузки, на примере предыдущей лабораторной работы.
 
+## Приложение
 #### Программа 1
 ```c
 #include <omp.h> 
@@ -179,7 +179,7 @@ int main(){
 
 ```
 
-#### Программа 2
+#### Оценка времени исполнения параллельной программы
 ```c
 #include <omp.h>
 #include <stdio.h>
@@ -227,12 +227,14 @@ int main() {
 
       t1 = omp_get_wtime();
 #pragma omp parallel for shared(arrays, count, target, j) default(none) private(i) num_threads(threads) reduction(min : index) schedule(static)
-//#pragma omp parallel for shared(arrays, count, target, j) default(none) private(i) num_threads(threads) reduction(min : index) schedule(static, 1)
-//#pragma omp parallel for shared(arrays, count, target, j) default(none) private(i) num_threads(threads) reduction(min : index) schedule(static, 2)
-//#pragma omp parallel for shared(arrays, count, target, j) default(none) private(i) num_threads(threads) reduction(min : index) schedule(dynamic, 1)
-//#pragma omp parallel for shared(arrays, count, target, j) default(none) private(i) num_threads(threads) reduction(min : index) schedule(dynamic, 2)
-//#pragma omp parallel for shared(arrays, count, target, j) default(none) private(i) num_threads(threads) reduction(min : index) schedule(guided, 1)
-//#pragma omp parallel for shared(arrays, count, target, j) default(none) private(i) num_threads(threads) reduction(min : index) schedule(guided, 2)
+//#pragma omp parallel for shared(arrays, count, target, j) default(none) private(i) num_threads(threads) reduction(min : index) schedule(static, 10)
+//#pragma omp parallel for shared(arrays, count, target, j) default(none) private(i) num_threads(threads) reduction(min : index) schedule(static, 1000)
+//#pragma omp parallel for shared(arrays, count, target, j) default(none) private(i) num_threads(threads) reduction(min : index) schedule(dynamic)
+//#pragma omp parallel for shared(arrays, count, target, j) default(none) private(i) num_threads(threads) reduction(min : index) schedule(dynamic, 10)
+//#pragma omp parallel for shared(arrays, count, target, j) default(none) private(i) num_threads(threads) reduction(min : index) schedule(dynamic, 1000)
+//#pragma omp parallel for shared(arrays, count, target, j) default(none) private(i) num_threads(threads) reduction(min : index) schedule(guided)
+//#pragma omp parallel for shared(arrays, count, target, j) default(none) private(i) num_threads(threads) reduction(min : index) schedule(guided, 10)
+//#pragma omp parallel for shared(arrays, count, target, j) default(none) private(i) num_threads(threads) reduction(min : index) schedule(guided, 1000)
       for (i = 0; i < count; i++) {
 
         if (arrays[j][i] == target) {
